@@ -1,0 +1,8 @@
+name: Collector
+version: 1.0
+main: net.research.collector.CollectorPlugin
+api-version: 1.8
+commands:
+  session:
+    description: Label the current session
+    usage: /session <label|status|end>
