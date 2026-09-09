@@ -31,16 +31,17 @@ def gcd_float(a, b, eps=1e-4):
         a, b = b, a % b
     return a
 
-def rotation_gcd(deltas, min_samples=40, eps=1e-4):
+def rotation_gcd(deltas, min_samples=40, eps=0.02):
     d = [abs(x) for x in deltas if abs(x) > eps]
     if len(d) < min_samples:
         return np.nan
-    g = d[0]
-    for x in d[1:]:
-        g = gcd_float(g, x, eps)
-        if g < eps:
-            return 0.0
-    return g
+
+    pair_gcds = [gcd_float(d[i], d[i + 1], eps) for i in range(len(d) - 1)]
+    pair_gcds = [g for g in pair_gcds if g > eps]
+
+    if not pair_gcds:
+        return 0.0
+    return float(np.median(pair_gcds))
 
 def rotation_features(w):
     dyaw, dpitch = w.dyaw.dropna(), w.dpitch.dropna()
