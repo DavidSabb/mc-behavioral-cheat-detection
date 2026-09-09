@@ -32,6 +32,14 @@ public class CombatListener implements Listener {
         Location tgt = target.getLocation();
 
         double reach = horizontalHitBoxDistance(eye, tgt);
+
+        writer.write("combat.csv", String.format(
+        "%d,%s,%s,%s,%.5f,%.5f,%.5f,%.4f,%.4f,%.5f,%.5f,%.5f,%.5f,%d",
+        ts, sid, attacker.getName(), target.getName(),
+        eye.getX(), eye.getY(), eye.getZ(), eye.getYaw(), eye.getPitch(),
+        tgt.getX(), tgt.getY(), tgt.getZ(),
+        reach, PingUtil.ping(attacker)
+    ));
     }
 
     private double horizontalHitBoxDistance(Location eye, Location target) {
