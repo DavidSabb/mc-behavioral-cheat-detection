@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-RAW = Path("data/raw")
+RAW = Path(__file__).resolve().parent.parent / "server" / "plugins" / "Collector"
+
 def wrap_degrees(series):
     """Wrap angle differences into [-180, 180].
 
@@ -54,3 +55,28 @@ def load_clicks(sessions):
     k = k.sort_values(["session_id", "ts"])
     k["interval_ms"] = k.groupby("session_id").ts.diff()
     return k
+
+def clean_movement(m):
+    before = len(m)
+    report = {}
+
+    mask = m.speed_h < 5.0
+    report["teleports"] = (~mask).sum()
+    m = m[mask]
+
+    mask = m.dt.between(10, 200) | m.dt.isna()
+    report["time_gaps"] = (~mask).sum()
+    m = m[mask]
+
+    m = m.dropna(subset=["dyaw", "speed_h"])
+
+    report["kept"] = len(m)
+    report["removed_pct"] = 100 * (before - len(m)) / before
+    return m, report
+
+def trim_edges(df, sessions, seconds=30):
+    starts = sessions.set_index("session_id").started_ts
+    ends = sessions.set_index("session_id").ended_ts
+    lo = df.session_id.map(starts) + seconds * 1000
+    hi = df.session_id.map(ends) - seconds * 1000
+    return df[(df.ts >= lo) & (df.ts <= hi)]
