@@ -9,8 +9,8 @@ models (killaura, reach, autoclicker, speed/fly).
 ## Status
 
 - [x] Server + collector plugin (movement, combat, click telemetry)
-- [ ] Data collection
-- [ ] Feature engineering
+- [x] Data collection
+- [x] Feature engineering
 - [ ] Modeling
 - [ ] Dashboard
 - [ ] Writeup
@@ -19,4 +19,4 @@ models (killaura, reach, autoclicker, speed/fly).
 
 Java (Spigot plugin) → Python (pandas, scikit-learn, LightGBM) → Streamlit
 
-More soon.
+More soon
