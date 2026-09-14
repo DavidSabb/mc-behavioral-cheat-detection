@@ -21,8 +21,9 @@ def rule_baseline(X):
     flags["aim"]         = (X["yaw_gcd"] < 1e-3) if "yaw_gcd" in X.columns else pd.Series(False, index=X.index)
     return flags.any(axis=1).astype(int)
 
-def train_cv(X, group_col="session_id"):
-    FEATURES = get_feature_cols(X)
+def train_cv(X, features=None, group_col="session_id"):
+    if features is None:
+        features = get_feature_cols(X)
     y = X.is_cheat.values
     groups = X[group_col].values
     oof = np.zeros(len(X))
@@ -39,8 +40,8 @@ def train_cv(X, group_col="session_id"):
             reg_lambda=1.0,
             random_state=42
         )
-        model.fit(X.iloc[tr][FEATURES], y[tr])
-        oof[te] = model.predict_proba(X.iloc[te][FEATURES])[:, 1]
+        model.fit(X.iloc[tr][features], y[tr])
+        oof[te] = model.predict_proba(X.iloc[te][features])[:, 1]
         models.append(model)
     return oof, models
 
